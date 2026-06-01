@@ -49,7 +49,7 @@ function onCellClick(e) {
   if (state.mode !== 'playing') return;
   const cell = e.target.closest('.game-cell');
   if (!cell) return;
-  if (cell.classList.contains('cell-correct') || cell.classList.contains('cell-missed')) return;
+  if (cell.classList.contains('cell-correct') || cell.classList.contains('cell-missed') || cell.classList.contains('cell-revealed')) return;
   const key = cellKey(cell);
   if (state.selected.has(key)) {
     state.selected.delete(key);
@@ -118,7 +118,9 @@ function nextPhase() {
   document.querySelectorAll('.game-cell').forEach(cell => {
     const wasValidated = cell.classList.contains('cell-correct') || cell.classList.contains('cell-missed');
     if (wasValidated) {
-      cell.classList.remove('selected');
+      const value = parseFloat(cell.dataset.value);
+      cell.className = 'game-cell cell-revealed ' + revealClass(value);
+      cell.textContent = cellSymbol(value);
     } else {
       cell.className = 'game-cell';
       cell.textContent = '';
