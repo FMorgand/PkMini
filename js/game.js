@@ -25,7 +25,8 @@ const PHASES = [
 const state = {
   phaseIndex: 0,
   selected: new Set(),
-  mode: 'playing', // 'playing' | 'validated'
+  mode: 'playing', // 'playing' | 'validated' | 'complete'
+  scores: [],      // [{correct, missed, wrong, total}] per phase
 };
 
 function initGame() {
@@ -37,8 +38,9 @@ function initGame() {
 // ── Button handler ──────────────────────────────────────────────────────────
 
 function onValidateClick() {
-  if (state.mode === 'playing') validatePhase();
-  else nextPhase();
+  if      (state.mode === 'playing')   validatePhase();
+  else if (state.mode === 'validated') nextPhase();
+  else if (state.mode === 'complete')  resetGame();
 }
 
 // ── Cell interaction ────────────────────────────────────────────────────────
@@ -99,6 +101,8 @@ function validatePhase() {
   if (missed > 0) parts.push(`<span class="score-missed">${missed} manquées</span>`);
   document.getElementById('phase-instruction').innerHTML = parts.join(' · ');
 
+  state.scores.push({ correct, missed, wrong, total: correct + missed });
+
   const isLast = state.phaseIndex === PHASES.length - 1;
   document.getElementById('validate-btn').textContent = isLast ? 'Voir le résultat →' : 'Phase suivante →';
 }
@@ -124,10 +128,58 @@ function nextPhase() {
   }
 }
 
-// ── Final reveal (tâche 8) ──────────────────────────────────────────────────
+// ── Final reveal ────────────────────────────────────────────────────────────
 
 function showFinalTable() {
-  // placeholder — à implémenter
+  state.mode = 'complete';
+  document.body.className = 'phase-complete';
+
+  document.querySelectorAll('.game-cell').forEach(cell => {
+    const value = parseFloat(cell.dataset.value);
+    cell.className = 'game-cell ' + revealClass(value);
+    cell.textContent = cellSymbol(value);
+  });
+
+  document.querySelectorAll('.row-counter').forEach(c => { c.textContent = ''; });
+
+  const totalCorrect = state.scores.reduce((s, p) => s + p.correct, 0);
+  const totalCells   = state.scores.reduce((s, p) => s + p.total,   0);
+  const totalWrong   = state.scores.reduce((s, p) => s + p.wrong,   0);
+
+  document.getElementById('phase-number').textContent = 'Bravo !';
+  document.getElementById('phase-symbol').textContent = '★';
+  document.getElementById('phase-label').textContent  = 'Table complète';
+
+  const parts = [`<strong>${totalCorrect} / ${totalCells}</strong> cases trouvées`];
+  if (totalWrong > 0) parts.push(`<span class="score-wrong">${totalWrong} erreur${totalWrong > 1 ? 's' : ''}</span>`);
+  else parts.push('<span class="score-perfect">Parfait !</span>');
+  document.getElementById('phase-instruction').innerHTML = parts.join(' · ');
+
+  document.getElementById('validate-btn').textContent = 'Rejouer';
+}
+
+// ── Reset ────────────────────────────────────────────────────────────────────
+
+function resetGame() {
+  state.phaseIndex = 0;
+  state.selected.clear();
+  state.mode = 'playing';
+  state.scores = [];
+
+  document.querySelectorAll('.game-cell').forEach(cell => {
+    cell.className = 'game-cell';
+    cell.textContent = '';
+  });
+
+  document.getElementById('validate-btn').textContent = 'Valider la phase';
+  applyPhaseUI();
+}
+
+function revealClass(value) {
+  if (value === 0)   return 'reveal-zero';
+  if (value === 0.5) return 'reveal-half';
+  if (value === 2)   return 'reveal-double';
+  return 'reveal-normal';
 }
 
 // ── UI helpers ───────────────────────────────────────────────────────────────

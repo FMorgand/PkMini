@@ -206,8 +206,19 @@ main {
   border-color: #cc6600 !important;
 }
 
-.score-wrong  { color: #ffa040; }
-.score-missed { color: #ff6666; }
+.score-wrong   { color: #ffa040; }
+.score-missed  { color: #ff6666; }
+.score-perfect { color: #aaffaa; font-weight: 700; }
+
+/* ── Final reveal ── */
+.game-cell.reveal-zero   { background: #111;    color: #555; }
+.game-cell.reveal-half   { background: #7a1e1e; color: #ffaaaa; }
+.game-cell.reveal-double { background: #1a5c1a; color: #aaffaa; }
+.game-cell.reveal-normal { background: #16213e; cursor: default; }
+
+.phase-complete #phase-number { color: #f5c518; font-size: 0.85rem; }
+.phase-complete #phase-symbol { color: #f5c518; }
+.phase-complete .game-cell    { cursor: default; }
 
 /* ── Row counters ── */
 .row-counter {
