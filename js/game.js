@@ -26,7 +26,7 @@ const state = {
   phaseIndex: 0,
   selected: new Set(),
   mode: 'playing', // 'playing' | 'validated' | 'complete'
-  scores: [],      // [{correct, missed, wrong, total}] per phase
+  scores: [],      // [{correct, missed, wrong, total, missedCells, wrongCells}]
 };
 
 function initGame() {
@@ -49,7 +49,9 @@ function onCellClick(e) {
   if (state.mode !== 'playing') return;
   const cell = e.target.closest('.game-cell');
   if (!cell) return;
-  if (cell.classList.contains('cell-correct') || cell.classList.contains('cell-missed') || cell.classList.contains('cell-revealed')) return;
+  if (cell.classList.contains('cell-correct') ||
+      cell.classList.contains('cell-missed')  ||
+      cell.classList.contains('cell-revealed')) return;
   const key = cellKey(cell);
   if (state.selected.has(key)) {
     state.selected.delete(key);
@@ -71,9 +73,11 @@ function validatePhase() {
   state.mode = 'validated';
   const phase = PHASES[state.phaseIndex];
   let correct = 0, missed = 0, wrong = 0;
+  const missedCells = [];
+  const wrongCells  = [];
 
   document.querySelectorAll('.game-cell').forEach(cell => {
-    const value   = parseFloat(cell.dataset.value);
+    const value      = parseFloat(cell.dataset.value);
     const isTarget   = value === phase.value;
     const isSelected = state.selected.has(cellKey(cell));
 
@@ -85,30 +89,30 @@ function validatePhase() {
       cell.classList.add('cell-missed');
       cell.textContent = cellSymbol(value);
       missed++;
+      missedCells.push({ atkIdx: parseInt(cell.dataset.atk), defIdx: parseInt(cell.dataset.def) });
     } else if (!isTarget && isSelected) {
       cell.classList.remove('selected');
       cell.classList.add('cell-wrong');
       wrong++;
+      wrongCells.push({ atkIdx: parseInt(cell.dataset.atk), defIdx: parseInt(cell.dataset.def) });
     }
   });
 
-  // Hide counters
   document.querySelectorAll('.row-counter').forEach(c => { c.textContent = ''; });
 
-  // Score in phase indicator
   const total = correct + missed;
   const parts = [`<strong>${correct} / ${total}</strong> trouvées`];
   if (wrong  > 0) parts.push(`<span class="score-wrong">${wrong} en trop</span>`);
   if (missed > 0) parts.push(`<span class="score-missed">${missed} manquées</span>`);
   document.getElementById('phase-instruction').innerHTML = parts.join(' · ');
 
-  state.scores.push({ correct, missed, wrong, total: correct + missed });
+  state.scores.push({ correct, missed, wrong, total, missedCells, wrongCells });
 
   const isLast = state.phaseIndex === PHASES.length - 1;
   document.getElementById('validate-btn').textContent = isLast ? 'Voir le résultat →' : 'Phase suivante →';
 }
 
-// ── Phase transition ─────────────────────────────────────────────────────────
+// ── Phase transition ──────────────────────────────────────────────────────────
 
 function nextPhase() {
   state.phaseIndex++;
@@ -116,8 +120,9 @@ function nextPhase() {
   state.mode = 'playing';
 
   document.querySelectorAll('.game-cell').forEach(cell => {
-    const wasValidated = cell.classList.contains('cell-correct') || cell.classList.contains('cell-missed');
-    if (wasValidated) {
+    if (cell.classList.contains('cell-revealed')) {
+      // Already converted in a prior transition — leave untouched
+    } else if (cell.classList.contains('cell-correct') || cell.classList.contains('cell-missed')) {
       const value = parseFloat(cell.dataset.value);
       cell.className = 'game-cell cell-revealed ' + revealClass(value);
       cell.textContent = cellSymbol(value);
@@ -142,10 +147,29 @@ function showFinalTable() {
   state.mode = 'complete';
   document.body.className = 'phase-complete';
 
+  // Reveal all cells not yet locked
   document.querySelectorAll('.game-cell').forEach(cell => {
-    const value = parseFloat(cell.dataset.value);
-    cell.className = 'game-cell ' + revealClass(value);
-    cell.textContent = cellSymbol(value);
+    if (!cell.classList.contains('cell-revealed')) {
+      const value = parseFloat(cell.dataset.value);
+      cell.className = 'game-cell ' + revealClass(value);
+      cell.textContent = cellSymbol(value);
+    }
+  });
+
+  // Re-apply error styles from all phases on top of natural colors
+  state.scores.forEach(({ wrongCells, missedCells }) => {
+    wrongCells.forEach(({ atkIdx, defIdx }) => {
+      const cell = document.querySelector(`.game-cell[data-atk="${atkIdx}"][data-def="${defIdx}"]`);
+      if (cell) { cell.className = 'game-cell cell-wrong'; cell.textContent = ''; }
+    });
+    missedCells.forEach(({ atkIdx, defIdx }) => {
+      const cell = document.querySelector(`.game-cell[data-atk="${atkIdx}"][data-def="${defIdx}"]`);
+      if (cell) {
+        const value = parseFloat(cell.dataset.value);
+        cell.className = 'game-cell cell-missed';
+        cell.textContent = cellSymbol(value);
+      }
+    });
   });
 
   document.querySelectorAll('.row-counter').forEach(c => { c.textContent = ''; });
@@ -164,6 +188,51 @@ function showFinalTable() {
   document.getElementById('phase-instruction').innerHTML = parts.join(' · ');
 
   document.getElementById('validate-btn').textContent = 'Rejouer';
+
+  buildErrorList();
+}
+
+function buildErrorList() {
+  const container = document.getElementById('error-list');
+  const hasErrors = state.scores.some(s => s.wrongCells.length > 0 || s.missedCells.length > 0);
+
+  if (!hasErrors) {
+    container.style.display = 'none';
+    return;
+  }
+
+  let html = '<h3>Détail des erreurs</h3>';
+
+  state.scores.forEach((score, i) => {
+    if (score.wrongCells.length === 0 && score.missedCells.length === 0) return;
+    const phase = PHASES[i];
+    html += `<div class="error-phase">
+      <h4><span class="error-phase-symbol">${phase.symbol}</span> ${phase.label}</h4>
+      <ul>`;
+
+    score.wrongCells.forEach(({ atkIdx, defIdx }) => {
+      html += `<li class="err-item err-wrong-item">
+        <span class="err-type" style="background:${TYPES[atkIdx].color}">${TYPES[atkIdx].fr}</span>
+        <span class="err-arrow">→</span>
+        <span class="err-type" style="background:${TYPES[defIdx].color}">${TYPES[defIdx].fr}</span>
+        <span class="err-tag err-tag-wrong">sélectionné à tort</span>
+      </li>`;
+    });
+
+    score.missedCells.forEach(({ atkIdx, defIdx }) => {
+      html += `<li class="err-item err-missed-item">
+        <span class="err-type" style="background:${TYPES[atkIdx].color}">${TYPES[atkIdx].fr}</span>
+        <span class="err-arrow">→</span>
+        <span class="err-type" style="background:${TYPES[defIdx].color}">${TYPES[defIdx].fr}</span>
+        <span class="err-tag err-tag-missed">manquée</span>
+      </li>`;
+    });
+
+    html += '</ul></div>';
+  });
+
+  container.innerHTML = html;
+  container.style.display = 'block';
 }
 
 // ── Reset ────────────────────────────────────────────────────────────────────
@@ -179,15 +248,12 @@ function resetGame() {
     cell.textContent = '';
   });
 
+  const errorList = document.getElementById('error-list');
+  errorList.innerHTML = '';
+  errorList.style.display = 'none';
+
   document.getElementById('validate-btn').textContent = 'Valider la phase';
   applyPhaseUI();
-}
-
-function revealClass(value) {
-  if (value === 0)   return 'reveal-zero';
-  if (value === 0.5) return 'reveal-half';
-  if (value === 2)   return 'reveal-double';
-  return 'reveal-normal';
 }
 
 // ── UI helpers ───────────────────────────────────────────────────────────────
@@ -206,8 +272,7 @@ function updateCounters() {
   const phaseValue = PHASES[state.phaseIndex].value;
   document.querySelectorAll('.row-counter').forEach(counter => {
     const atkIdx = parseInt(counter.dataset.atk);
-    let total = 0;
-    let selectedInRow = 0;
+    let total = 0, selectedInRow = 0;
     TYPES.forEach((_, defIdx) => {
       if (TYPE_CHART[atkIdx][defIdx] === phaseValue) total++;
       if (state.selected.has(`${atkIdx}-${defIdx}`)) selectedInRow++;
@@ -216,6 +281,13 @@ function updateCounters() {
     counter.textContent = remaining > 0 ? remaining : '';
     counter.classList.toggle('counter-done', remaining === 0);
   });
+}
+
+function revealClass(value) {
+  if (value === 0)   return 'reveal-zero';
+  if (value === 0.5) return 'reveal-half';
+  if (value === 2)   return 'reveal-double';
+  return 'reveal-normal';
 }
 
 function cellSymbol(value) {
