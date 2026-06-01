@@ -1,0 +1,194 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+header {
+  text-align: center;
+  padding: 2rem 1rem 1.5rem;
+}
+
+header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #fff;
+}
+
+header h1 span {
+  color: #f5c518;
+}
+
+header p {
+  margin-top: 0.4rem;
+  color: #a0a0c0;
+  font-size: 0.95rem;
+}
+
+/* ── Table wrapper ── */
+main {
+  padding: 0 1rem 3rem;
+  overflow-x: auto;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+/* ── Table ── */
+#type-table {
+  border-collapse: collapse;
+  margin: 0 auto;
+  font-size: 0.75rem;
+}
+
+/* Corner cell */
+.corner {
+  position: relative;
+  min-width: 80px;
+  min-height: 56px;
+  padding: 4px;
+  background: #1a1a2e;
+  border: none;
+}
+
+.axis-label {
+  position: absolute;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #a0a0c0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.atk-label {
+  bottom: 6px;
+  right: 6px;
+}
+
+.def-label {
+  top: 6px;
+  left: 6px;
+}
+
+/* Column headers */
+.col-header {
+  padding: 4px 2px;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+.col-header .type-badge {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  display: inline-block;
+}
+
+/* Row headers */
+.row-header {
+  padding: 2px 6px 2px 2px;
+  text-align: right;
+}
+
+/* Type badge */
+.type-badge {
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 4px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.68rem;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+/* ── Cells ── */
+#type-table td {
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 700;
+  font-size: 0.8rem;
+  border: 1px solid #2a2a4a;
+  cursor: default;
+}
+
+.eff-normal {
+  background: #16213e;
+  color: transparent;
+}
+
+.eff-zero {
+  background: #111;
+  color: #555;
+  font-size: 0.7rem;
+}
+
+.eff-half {
+  background: #7a1e1e;
+  color: #ffaaaa;
+}
+
+.eff-double {
+  background: #1a5c1a;
+  color: #aaffaa;
+}
+
+/* ── Diagonal separator line in corner ── */
+.corner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom right,
+    transparent calc(50% - 0.5px),
+    #3a3a5a calc(50% - 0.5px),
+    #3a3a5a calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+  pointer-events: none;
+}
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #a0a0c0;
+}
+
+.legend-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+}

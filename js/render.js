@@ -1,0 +1,73 @@
+function buildTable() {
+  const table = document.getElementById('type-table');
+
+  // Header row: empty corner + attacking type labels
+  const thead = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+
+  const cornerTh = document.createElement('th');
+  cornerTh.className = 'corner';
+  cornerTh.innerHTML = '<span class="axis-label atk-label">ATT →</span><span class="axis-label def-label">↓ DEF</span>';
+  headerRow.appendChild(cornerTh);
+
+  TYPES.forEach(type => {
+    const th = document.createElement('th');
+    th.className = 'col-header';
+    const badge = document.createElement('span');
+    badge.className = 'type-badge';
+    badge.textContent = type.fr;
+    badge.style.backgroundColor = type.color;
+    th.appendChild(badge);
+    headerRow.appendChild(th);
+  });
+
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  // Data rows: defending type label + cells
+  const tbody = document.createElement('tbody');
+
+  TYPES.forEach((defType, defIdx) => {
+    const row = document.createElement('tr');
+
+    // Row header: defending type
+    const rowTh = document.createElement('th');
+    rowTh.className = 'row-header';
+    const badge = document.createElement('span');
+    badge.className = 'type-badge';
+    badge.textContent = defType.fr;
+    badge.style.backgroundColor = defType.color;
+    rowTh.appendChild(badge);
+    row.appendChild(rowTh);
+
+    // Cells: one per attacking type
+    TYPES.forEach((_, atkIdx) => {
+      const td = document.createElement('td');
+      const value = TYPE_CHART[atkIdx][defIdx];
+      td.dataset.value = value;
+      td.className = effectivenessClass(value);
+      td.textContent = cellLabel(value);
+      row.appendChild(td);
+    });
+
+    tbody.appendChild(row);
+  });
+
+  table.appendChild(tbody);
+}
+
+function effectivenessClass(value) {
+  if (value === 0)   return 'eff-zero';
+  if (value === 0.5) return 'eff-half';
+  if (value === 2)   return 'eff-double';
+  return 'eff-normal';
+}
+
+function cellLabel(value) {
+  if (value === 0)   return '✕';
+  if (value === 0.5) return '½';
+  if (value === 2)   return '2';
+  return '';
+}
+
+document.addEventListener('DOMContentLoaded', buildTable);
