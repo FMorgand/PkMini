@@ -173,8 +173,12 @@ main {
   transition: border-color 0.1s;
 }
 
+/* Alternating row tint via CSS custom property */
+#type-table tbody tr:nth-child(odd)  { --cell-bg: #16213e; }
+#type-table tbody tr:nth-child(even) { --cell-bg: #1b2647; }
+
 .game-cell {
-  background: #16213e;
+  background: var(--cell-bg, #16213e);
 }
 
 .game-cell:hover {
@@ -214,7 +218,7 @@ main {
 .game-cell.reveal-zero   { background: #111;    color: #555; }
 .game-cell.reveal-half   { background: #7a1e1e; color: #ffaaaa; }
 .game-cell.reveal-double { background: #1a5c1a; color: #aaffaa; }
-.game-cell.reveal-normal { background: #16213e; cursor: default; }
+.game-cell.reveal-normal { background: var(--cell-bg, #16213e); }
 
 .phase-complete #phase-number { color: #f5c518; font-size: 0.85rem; }
 .phase-complete #phase-symbol { color: #f5c518; }

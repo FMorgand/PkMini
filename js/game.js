@@ -49,6 +49,7 @@ function onCellClick(e) {
   if (state.mode !== 'playing') return;
   const cell = e.target.closest('.game-cell');
   if (!cell) return;
+  if (cell.classList.contains('cell-correct') || cell.classList.contains('cell-missed')) return;
   const key = cellKey(cell);
   if (state.selected.has(key)) {
     state.selected.delete(key);
@@ -115,8 +116,13 @@ function nextPhase() {
   state.mode = 'playing';
 
   document.querySelectorAll('.game-cell').forEach(cell => {
-    cell.className = 'game-cell';
-    cell.textContent = '';
+    const wasValidated = cell.classList.contains('cell-correct') || cell.classList.contains('cell-missed');
+    if (wasValidated) {
+      cell.classList.remove('selected');
+    } else {
+      cell.className = 'game-cell';
+      cell.textContent = '';
+    }
   });
 
   document.getElementById('validate-btn').textContent = 'Valider la phase';
@@ -197,9 +203,9 @@ function applyPhaseUI() {
 function updateCounters() {
   const phaseValue = PHASES[state.phaseIndex].value;
   document.querySelectorAll('.row-counter').forEach(counter => {
-    const defIdx = parseInt(counter.dataset.def);
+    const atkIdx = parseInt(counter.dataset.atk);
     let remaining = 0;
-    TYPES.forEach((_, atkIdx) => {
+    TYPES.forEach((_, defIdx) => {
       if (TYPE_CHART[atkIdx][defIdx] === phaseValue && !state.selected.has(`${atkIdx}-${defIdx}`)) {
         remaining++;
       }

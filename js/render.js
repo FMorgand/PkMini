@@ -7,7 +7,7 @@ function buildTable() {
 
   const cornerTh = document.createElement('th');
   cornerTh.className = 'corner';
-  cornerTh.innerHTML = '<span class="axis-label atk-label">ATT →</span><span class="axis-label def-label">↓ DEF</span>';
+  cornerTh.innerHTML = '<span class="axis-label def-label">DEF →</span><span class="axis-label atk-label">↓ ATT</span>';
   headerRow.appendChild(cornerTh);
 
   TYPES.forEach(type => {
@@ -27,24 +27,24 @@ function buildTable() {
   thead.appendChild(headerRow);
   table.appendChild(thead);
 
-  // Data rows: defending type label + cells
+  // Data rows: attacking type label + cells (defenders are columns)
   const tbody = document.createElement('tbody');
 
-  TYPES.forEach((defType, defIdx) => {
+  TYPES.forEach((atkType, atkIdx) => {
     const row = document.createElement('tr');
 
-    // Row header: defending type
+    // Row header: attacking type
     const rowTh = document.createElement('th');
     rowTh.className = 'row-header';
     const badge = document.createElement('span');
     badge.className = 'type-badge';
-    badge.textContent = defType.fr;
-    badge.style.backgroundColor = defType.color;
+    badge.textContent = atkType.fr;
+    badge.style.backgroundColor = atkType.color;
     rowTh.appendChild(badge);
     row.appendChild(rowTh);
 
-    // Cells: one per attacking type
-    TYPES.forEach((_, atkIdx) => {
+    // Cells: one per defending type
+    TYPES.forEach((_, defIdx) => {
       const td = document.createElement('td');
       td.className = 'game-cell';
       td.dataset.value = TYPE_CHART[atkIdx][defIdx];
@@ -53,10 +53,10 @@ function buildTable() {
       row.appendChild(td);
     });
 
-    // Counter cell at end of row
+    // Counter cell at end of row (keyed by attacker)
     const counterTd = document.createElement('td');
     counterTd.className = 'row-counter';
-    counterTd.dataset.def = defIdx;
+    counterTd.dataset.atk = atkIdx;
     row.appendChild(counterTd);
 
     tbody.appendChild(row);
