@@ -186,11 +186,28 @@ main {
 .phase-double .game-cell.selected { background: #1a4a1a; border-color: #3a8a3a; }
 .phase-half   .game-cell.selected { background: #4a1a1a; border-color: #8a3a3a; }
 
-/* Revealed cell styles (used later for validation feedback) */
-.eff-zero   { background: #111;    color: #555;    font-size: 0.7rem; }
-.eff-half   { background: #7a1e1e; color: #ffaaaa; }
-.eff-double { background: #1a5c1a; color: #aaffaa; }
-.eff-normal { background: #16213e; }
+/* ── Validation feedback ── */
+.game-cell.cell-correct {
+  background: #1a5c1a;
+  color: #aaffaa;
+  border-color: #3a8a3a;
+}
+
+.game-cell.cell-missed {
+  background: #5c1a1a;
+  color: #ff8888;
+  border-color: #8a3a3a;
+  opacity: 0.85;
+}
+
+.game-cell.cell-wrong {
+  background: #5c3a00;
+  color: #ffa040;
+  border-color: #cc6600 !important;
+}
+
+.score-wrong  { color: #ffa040; }
+.score-missed { color: #ff6666; }
 
 /* ── Row counters ── */
 .row-counter {
