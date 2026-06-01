@@ -21,6 +21,9 @@ function buildTable() {
     headerRow.appendChild(th);
   });
 
+  // Empty header above the counter column
+  headerRow.appendChild(document.createElement('th'));
+
   thead.appendChild(headerRow);
   table.appendChild(thead);
 
@@ -49,6 +52,12 @@ function buildTable() {
       td.dataset.def = defIdx;
       row.appendChild(td);
     });
+
+    // Counter cell at end of row
+    const counterTd = document.createElement('td');
+    counterTd.className = 'row-counter';
+    counterTd.dataset.def = defIdx;
+    row.appendChild(counterTd);
 
     tbody.appendChild(row);
   });

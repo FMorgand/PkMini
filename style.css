@@ -192,6 +192,45 @@ main {
 .eff-double { background: #1a5c1a; color: #aaffaa; }
 .eff-normal { background: #16213e; }
 
+/* ── Row counters ── */
+.row-counter {
+  width: 28px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #6060a0;
+  text-align: center;
+  cursor: default;
+  border: none !important;
+  padding-left: 6px;
+}
+
+.row-counter.counter-done {
+  color: #3a8a3a;
+}
+
+/* ── Validate button ── */
+.game-actions {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+#validate-btn {
+  padding: 0.65rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  background: #f5c518;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: background 0.15s, transform 0.1s;
+}
+
+#validate-btn:hover  { background: #ffd740; }
+#validate-btn:active { transform: scale(0.97); }
+
 /* ── Diagonal separator line in corner ── */
 .corner::after {
   content: '';

@@ -30,6 +30,7 @@ const state = {
 function initGame() {
   applyPhaseUI();
   document.getElementById('type-table').addEventListener('click', onCellClick);
+  document.getElementById('validate-btn').addEventListener('click', validatePhase);
 }
 
 function onCellClick(e) {
@@ -43,6 +44,11 @@ function onCellClick(e) {
     state.selected.add(key);
     cell.classList.add('selected');
   }
+  updateCounters();
+}
+
+function validatePhase() {
+  // Task 6 — à implémenter
 }
 
 function cellKey(cell) {
@@ -56,4 +62,21 @@ function applyPhaseUI() {
   document.getElementById('phase-symbol').textContent = phase.symbol;
   document.getElementById('phase-label').textContent = phase.label;
   document.getElementById('phase-instruction').textContent = phase.instruction;
+  updateCounters();
+}
+
+function updateCounters() {
+  const phaseValue = PHASES[state.phaseIndex].value;
+  document.querySelectorAll('.row-counter').forEach(counter => {
+    const defIdx = parseInt(counter.dataset.def);
+    let remaining = 0;
+    TYPES.forEach((_, atkIdx) => {
+      const value = parseFloat(TYPE_CHART[atkIdx][defIdx]);
+      if (value === phaseValue && !state.selected.has(`${atkIdx}-${defIdx}`)) {
+        remaining++;
+      }
+    });
+    counter.textContent = remaining > 0 ? remaining : '';
+    counter.classList.toggle('counter-done', remaining === 0);
+  });
 }
