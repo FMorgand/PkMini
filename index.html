@@ -13,23 +13,12 @@
   </header>
 
   <main>
-    <div class="legend">
-      <div class="legend-item">
-        <div class="legend-swatch" style="background:#1a5c1a; color:#aaffaa;">2</div>
-        <span>Super efficace (×2)</span>
+    <div id="phase-indicator">
+      <div class="phase-header">
+        <span id="phase-number"></span>
+        <h2><span id="phase-symbol"></span> — <span id="phase-label"></span></h2>
       </div>
-      <div class="legend-item">
-        <div class="legend-swatch" style="background:#7a1e1e; color:#ffaaaa;">½</div>
-        <span>Peu efficace (×½)</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-swatch" style="background:#111; color:#555;">✕</div>
-        <span>Aucun effet (×0)</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-swatch" style="background:#16213e;"></div>
-        <span>Normal (×1)</span>
-      </div>
+      <p id="phase-instruction"></p>
     </div>
 
     <div class="table-wrapper">
@@ -38,6 +27,7 @@
   </main>
 
   <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
   <script src="js/render.js"></script>
 </body>
 </html>

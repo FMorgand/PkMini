@@ -43,10 +43,10 @@ function buildTable() {
     // Cells: one per attacking type
     TYPES.forEach((_, atkIdx) => {
       const td = document.createElement('td');
-      const value = TYPE_CHART[atkIdx][defIdx];
-      td.dataset.value = value;
-      td.className = effectivenessClass(value);
-      td.textContent = cellLabel(value);
+      td.className = 'game-cell';
+      td.dataset.value = TYPE_CHART[atkIdx][defIdx];
+      td.dataset.atk = atkIdx;
+      td.dataset.def = defIdx;
       row.appendChild(td);
     });
 
@@ -70,4 +70,7 @@ function cellLabel(value) {
   return '';
 }
 
-document.addEventListener('DOMContentLoaded', buildTable);
+document.addEventListener('DOMContentLoaded', () => {
+  buildTable();
+  initGame();
+});
