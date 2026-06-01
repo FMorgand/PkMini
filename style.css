@@ -198,20 +198,19 @@ main {
 }
 
 .game-cell.cell-missed {
-  background: #5c1a1a;
-  color: #ff8888;
-  border-color: #8a3a3a;
-  opacity: 0.85;
+  background: #0a3a5c;
+  color: #80d0ff;
+  border-color: #1a7abf;
 }
 
 .game-cell.cell-wrong {
-  background: #5c3a00;
-  color: #ffa040;
-  border-color: #cc6600 !important;
+  background: #7a2e00;
+  color: #ffaa40;
+  border-color: #e05800 !important;
 }
 
-.score-wrong   { color: #ffa040; }
-.score-missed  { color: #ff6666; }
+.score-wrong   { color: #ffaa40; }
+.score-missed  { color: #80d0ff; }
 .score-perfect { color: #aaffaa; font-weight: 700; }
 
 /* ── Final reveal ── */

@@ -204,12 +204,13 @@ function updateCounters() {
   const phaseValue = PHASES[state.phaseIndex].value;
   document.querySelectorAll('.row-counter').forEach(counter => {
     const atkIdx = parseInt(counter.dataset.atk);
-    let remaining = 0;
+    let total = 0;
+    let selectedInRow = 0;
     TYPES.forEach((_, defIdx) => {
-      if (TYPE_CHART[atkIdx][defIdx] === phaseValue && !state.selected.has(`${atkIdx}-${defIdx}`)) {
-        remaining++;
-      }
+      if (TYPE_CHART[atkIdx][defIdx] === phaseValue) total++;
+      if (state.selected.has(`${atkIdx}-${defIdx}`)) selectedInRow++;
     });
+    const remaining = Math.max(0, total - selectedInRow);
     counter.textContent = remaining > 0 ? remaining : '';
     counter.classList.toggle('counter-done', remaining === 0);
   });
